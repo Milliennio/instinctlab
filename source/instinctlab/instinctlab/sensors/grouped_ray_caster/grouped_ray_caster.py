@@ -12,7 +12,7 @@ import isaaclab.sim as sim_utils
 import isaaclab.utils.math as math_utils
 from isaaclab.sensors.ray_caster import MultiMeshRayCaster
 from isaaclab.sensors.ray_caster.ray_cast_utils import obtain_world_pose_from_view
-from isaaclab.sim.views import XformPrimView
+# from isaaclab.sim.views import XformPrimView
 
 from instinctlab.utils.warp.raycast import raycast_mesh_grouped
 

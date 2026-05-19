@@ -17,7 +17,7 @@ from instinctlab.motion_reference import MotionReferenceManagerCfg
 from instinctlab.motion_reference.motion_files.amass_motion_cfg import AmassMotionCfg as AmassMotionCfgBase
 from instinctlab.motion_reference.utils import motion_interpolate_bilinear
 from instinctlab.sensors import get_link_prim_targets
-from instinctlab.tasks.parkour.config.parkour_env_cfg import ROUGH_TERRAINS_CFG, ParkourEnvCfg
+from instinctlab.tasks.parkour.config.parkour_env_cfg import ROUGH_TERRAINS_CFG, ParkourEnvCfg, PLAY_TERRAINS_CFG
 
 __file_dir__ = os.path.dirname(os.path.realpath(__file__))
 G1_CFG = copy.deepcopy(G1_29DOF_TORSOBASE_POPSICLE_CFG)
@@ -31,9 +31,9 @@ G1_with_shoe_CFG.spawn.asset_path = os.path.abspath(
 
 @configclass
 class AmassMotionCfg(AmassMotionCfgBase):
-    path = os.path.expanduser("~/Datasets")
+    path = os.path.expanduser("/home/you/instinct_rl/instinctlab/data/parkour_motion_reference")
     retargetting_func = None
-    filtered_motion_selection_filepath = os.path.expanduser("~/Datasets/parkour_motion_without_run.yaml")
+    filtered_motion_selection_filepath = os.path.expanduser("/home/you/instinct_rl/instinctlab/data/parkour_motion_reference/parkour_motion_without_run.yaml")
     motion_start_from_middle_range = [0.0, 0.9]
     motion_start_height_offset = 0.0
     ensure_link_below_zero_ground = False
@@ -79,6 +79,10 @@ ROUGH_TERRAINS_CFG_PLAY = copy.deepcopy(ROUGH_TERRAINS_CFG)
 for sub_terrain_name, sub_terrain_cfg in ROUGH_TERRAINS_CFG_PLAY.sub_terrains.items():
     sub_terrain_cfg.wall_prob = [0.0, 0.0, 0.0, 0.0]
 
+# ROUGH_TERRAINS_CFG_PLAY = copy.deepcopy(PLAY_TERRAINS_CFG)
+# for sub_terrain_name, sub_terrain_cfg in ROUGH_TERRAINS_CFG_PLAY.sub_terrains.items():
+#     sub_terrain_cfg.wall_prob = [0.0, 0.0, 0.0, 0.0]
+
 
 @configclass
 class G1ParkourRoughEnvCfg(ParkourEnvCfg):
@@ -108,13 +112,13 @@ class G1ParkourRoughEnvCfg_PLAY(G1ParkourRoughEnvCfg):
         super().__post_init__()
         self.scene.terrain.terrain_generator = ROUGH_TERRAINS_CFG_PLAY
         # make a smaller scene for play
-        self.scene.num_envs = 10
-        self.viewer = ViewerCfg(
-            eye=[4.0, 0.75, 1.0],
-            lookat=[0.0, 0.75, 0.0],
-            origin_type="asset_root",
-            asset_name="robot",
-        )
+        self.scene.num_envs = 16
+        # self.viewer = ViewerCfg(
+        #     eye=[4.0, 0.75, 1.0],
+        #     lookat=[0.0, 0.75, 0.0],
+        #     origin_type="asset_root",
+        #     asset_name="robot",
+        # )
 
         self.scene.env_spacing = 2.5
         self.episode_length_s = 10

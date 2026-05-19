@@ -63,7 +63,21 @@ from instinct_rl.utils.utils import get_obs_slice, get_subobs_by_components, get
 
 from isaaclab.envs import DirectMARLEnv, multi_agent_to_single_agent
 from isaaclab.utils.dict import print_dict
-from isaaclab.utils.io import load_pickle, load_yaml
+
+##############################
+# from isaaclab.utils.io import load_pickle, load_yaml
+import pickle
+import yaml
+
+def load_pickle(filename):
+    with open(filename, "rb") as f:
+        return pickle.load(f)
+
+def load_yaml(filename):
+    with open(filename, "r") as f:
+        return yaml.safe_load(f)
+##############################
+
 from isaaclab_tasks.utils import get_checkpoint_path, parse_env_cfg
 
 # Import extensions to set up environment tasks
