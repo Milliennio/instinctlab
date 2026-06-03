@@ -532,7 +532,7 @@ class SceneCfg(InteractiveSceneCfg):
     terrain = TerrainImporterCfg(
         prim_path="/World/ground",
         terrain_type="generator",
-        terrain_generator=PLAY_TERRAINS_CFG,
+        terrain_generator=ROUGH_TERRAINS_CFG,
         max_init_terrain_level=5,
         collision_group=-1,
         physics_material=sim_utils.RigidBodyMaterialCfg(
@@ -575,15 +575,15 @@ class SceneCfg(InteractiveSceneCfg):
         mesh_prim_paths=["/World/ground"],
         update_period=0.02,
     )
-    blind_spot_gt = RayCasterCfg(
-        prim_path="{ENV_REGEX_NS}/Robot/torso_link",
-        offset=RayCasterCfg.OffsetCfg(pos=(0.3, 0.0, 20.0)), # 提前0.3m，覆盖脚下与正前方
-        ray_alignment="yaw",
-        pattern_cfg=patterns.GridPatternCfg(resolution=0.02, size=[0.6, 0.4]), # 31x21 的高分辨率网格
-        debug_vis=True,
-        mesh_prim_paths=["/World/ground"],
-        update_period=0.02,
-    )
+    # blind_spot_gt = RayCasterCfg(
+    #     prim_path="{ENV_REGEX_NS}/Robot/torso_link",
+    #     offset=RayCasterCfg.OffsetCfg(pos=(0.3, 0.0, 20.0)), # 提前0.3m，覆盖脚下与正前方
+    #     ray_alignment="yaw",
+    #     pattern_cfg=patterns.GridPatternCfg(resolution=0.02, size=[0.6, 0.4]), # 31x21 的高分辨率网格
+    #     debug_vis=True,
+    #     mesh_prim_paths=["/World/ground"],
+    #     update_period=0.02,
+    # )
     contact_forces = ContactSensorCfg(prim_path="{ENV_REGEX_NS}/Robot/.*", history_length=3, track_air_time=True)
     leg_volume_points = VolumePointsCfg(
         prim_path="{ENV_REGEX_NS}/Robot/.*_ankle_roll_link",
@@ -706,7 +706,7 @@ class ObservationsCfg:
                 "history_skip_frames": 5,
                 "num_output_frames": 8,
                 "delayed_frame_ranges": (0, 1),
-                "debug_vis": False,
+                "debug_vis": True,
             },
             noise=None,
         )

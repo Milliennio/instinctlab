@@ -128,6 +128,7 @@ class G1ParkourRoughEnvCfg_PLAY(G1ParkourRoughEnvCfg):
         if self.scene.terrain.terrain_generator is not None:
             self.scene.terrain.terrain_generator.num_rows = 4
             self.scene.terrain.terrain_generator.num_cols = 10
+            self.scene.terrain.terrain_generator.curriculum = False
 
         self.scene.leg_volume_points.debug_vis = True
         self.commands.base_velocity.debug_vis = True
