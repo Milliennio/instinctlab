@@ -1,7 +1,7 @@
 from isaaclab.utils import configclass
 
 from instinctlab.utils.wrappers.instinct_rl import (
-    InstinctRlConv2dHeadCfg,
+    InstinctRlConvTemporalTransformerHeadCfg,
     InstinctRlEncoderMoEActorCriticCfg,
     InstinctRlOnPolicyRunnerCfg,
     InstinctRlPpoAlgorithmCfg,
@@ -9,15 +9,22 @@ from instinctlab.utils.wrappers.instinct_rl import (
 
 
 @configclass
-class DepthEncoderConv2dCfg(InstinctRlConv2dHeadCfg):
+class DepthEncoderConvTemporalTransformerCfg(InstinctRlConvTemporalTransformerHeadCfg):
     output_size = 128
-    channels = [4]
-    kernel_sizes = [3]
-    strides = [1]
-    hidden_sizes = [256, 256]
-    paddings = [1]
+    cnn_channels = [32, 64, 128, 256]
+    cnn_kernel_sizes = [3, 3, 3, (3, 4)]
+    cnn_strides = [2, 2, 2, 1]
+    cnn_paddings = [1, 1, 1, 0]
+    d_model = 256
+    num_heads = 4
+    num_layers = 1
+    dim_feedforward = 512
+    dropout = 0.1
+    activation = "relu"
     nonlinearity = "ReLU"
-    use_maxpool = True
+    norm_first = True
+    temporal_pool = "latest"
+    use_temporal_pos_embedding = True
     component_names = [
         "depth_image",
     ]
@@ -25,7 +32,7 @@ class DepthEncoderConv2dCfg(InstinctRlConv2dHeadCfg):
 
 @configclass
 class EncoderConfigs:
-    depth_encoder = DepthEncoderConv2dCfg()
+    depth_encoder = DepthEncoderConvTemporalTransformerCfg()
 
 
 @configclass

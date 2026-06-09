@@ -3,9 +3,13 @@
 """Launch Isaac Sim Simulator first."""
 
 import argparse
+import copy
+import csv
+import math
 import os
 import subprocess
 import sys
+import time
 
 sys.path.append(os.path.join(os.getcwd(), "scripts", "instinct_rl"))
 
@@ -36,6 +40,30 @@ parser.add_argument("--zero_act_until", type=int, default=0, help="Zero actions 
 parser.add_argument("--keyboard_control", action="store_true", default=False, help="Enable keyboard control.")
 parser.add_argument("--keyboard_linvel_step", type=float, default=0.5, help="Linear velocity change per keyboard step.")
 parser.add_argument("--keyboard_angvel", type=float, default=1.0, help="Angular velocity set by keyboard.")
+parser.add_argument(
+    "--terrain_name",
+    type=str,
+    default=None,
+    help="Force a single sub-terrain type for play, e.g. pyramid_stairs.",
+)
+parser.add_argument(
+    "--terrain_level",
+    type=int,
+    default=None,
+    help="Optionally force the single environment onto a specific terrain difficulty row.",
+)
+parser.add_argument(
+    "--log_moe_gate",
+    action="store_true",
+    default=False,
+    help="Log MoE gate weights during play when actor_moe_gate.onnx is available.",
+)
+parser.add_argument(
+    "--moe_gate_print_interval",
+    type=float,
+    default=0.5,
+    help="Console print interval in seconds for MoE gate weights.",
+)
 
 # append Instinct-RL cli arguments
 cli_args.add_instinct_rl_args(parser)
@@ -97,6 +125,92 @@ if args_cli.debug:
     debugpy.breakpoint()
 
 
+def force_single_subterrain(env_cfg, terrain_name: str):
+    terrain_generator = getattr(env_cfg.scene.terrain, "terrain_generator", None)
+    if terrain_generator is None:
+        raise ValueError("This task does not use a terrain generator, so --terrain_name is not applicable.")
+    if terrain_name not in terrain_generator.sub_terrains:
+        available = ", ".join(terrain_generator.sub_terrains.keys())
+        raise ValueError(f"Unknown terrain '{terrain_name}'. Available sub-terrains: {available}")
+    sub_terrain_cfg = copy.deepcopy(terrain_generator.sub_terrains[terrain_name])
+    if hasattr(sub_terrain_cfg, "proportion"):
+        sub_terrain_cfg.proportion = 1.0
+    terrain_generator.sub_terrains = {terrain_name: sub_terrain_cfg}
+    terrain_generator.num_cols = 1
+    terrain_generator.curriculum = False
+    base_velocity_cmd = getattr(getattr(env_cfg, "commands", None), "base_velocity", None)
+    if base_velocity_cmd is not None:
+        if getattr(base_velocity_cmd, "velocity_ranges", None) is not None:
+            if terrain_name in base_velocity_cmd.velocity_ranges:
+                base_velocity_cmd.velocity_ranges = {
+                    terrain_name: copy.deepcopy(base_velocity_cmd.velocity_ranges[terrain_name])
+                }
+            else:
+                base_velocity_cmd.velocity_ranges = None
+        if getattr(base_velocity_cmd, "random_velocity_terrain", None) is not None:
+            base_velocity_cmd.random_velocity_terrain = [
+                name for name in base_velocity_cmd.random_velocity_terrain if name == terrain_name
+            ] or None
+
+
+def set_forced_terrain_level(env, terrain_level: int):
+    terrain = env.unwrapped.scene.terrain
+    if terrain is None:
+        raise ValueError("Cannot set terrain level because the scene has no terrain.")
+    max_level = terrain.terrain_origins.shape[0] - 1
+    level = int(max(0, min(terrain_level, max_level)))
+    terrain.terrain_levels[:] = level
+    terrain.terrain_types[:] = 0
+    terrain.env_origins[:] = terrain.terrain_origins[level, 0]
+    print(f"[INFO] Forced terrain level to row {level} / {max_level}.")
+
+
+class MoeGateLogger:
+    def __init__(self, log_dir: str, print_interval: float):
+        os.makedirs(log_dir, exist_ok=True)
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        self.log_path = os.path.join(log_dir, f"moe_gate_play_{timestamp}.csv")
+        self.file = open(self.log_path, "w", newline="", buffering=1)
+        self.writer = csv.writer(self.file)
+        self.print_interval = print_interval
+        self.start_time = time.time()
+        self.last_print_time = 0.0
+        self.step = 0
+        self.header_written = False
+        print(f"[INFO] Logging MoE gate weights to: {self.log_path}")
+
+    def record(self, gate_weights):
+        if gate_weights is None:
+            return
+        gate_weights = gate_weights[0].tolist()
+        now = time.time()
+        elapsed = now - self.start_time
+        top1 = max(range(len(gate_weights)), key=lambda i: gate_weights[i])
+        max_weight = gate_weights[top1]
+        entropy = -sum(weight * math.log(weight + 1e-8) for weight in gate_weights)
+        if not self.header_written:
+            header = ["time_s", "wall_time", "step"]
+            header += [f"expert_{i}" for i in range(len(gate_weights))]
+            header += ["top1", "max_weight", "entropy"]
+            self.writer.writerow(header)
+            self.header_written = True
+        row = [f"{elapsed:.6f}", f"{now:.6f}", self.step]
+        row += [f"{weight:.8f}" for weight in gate_weights]
+        row += [top1, f"{max_weight:.8f}", f"{entropy:.8f}"]
+        self.writer.writerow(row)
+        if now - self.last_print_time >= self.print_interval:
+            print(
+                "[INFO] MoE gate:"
+                f" top1={top1}, max_weight={max_weight:.4f},"
+                f" weights={[round(weight, 4) for weight in gate_weights]}"
+            )
+            self.last_print_time = now
+        self.step += 1
+
+    def close(self):
+        self.file.close()
+
+
 def main():
     """Play with Instinct-RL agent."""
     # parse configuration
@@ -104,6 +218,11 @@ def main():
         args_cli.task, device=args_cli.device, num_envs=args_cli.num_envs, use_fabric=not args_cli.disable_fabric
     )
     agent_cfg: InstinctRlOnPolicyRunnerCfg = cli_args.parse_instinct_rl_cfg(args_cli.task, args_cli)
+    if args_cli.terrain_name is not None:
+        if args_cli.num_envs not in (None, 1):
+            raise ValueError("--terrain_name currently requires --num_envs=1.")
+        env_cfg.scene.num_envs = 1
+        force_single_subterrain(env_cfg, args_cli.terrain_name)
 
     # specify directory for logging experiments
     log_root_path = os.path.join("logs", "instinct_rl", agent_cfg.experiment_name)
@@ -141,6 +260,11 @@ def main():
 
     # create isaac environment
     env = gym.make(args_cli.task, cfg=env_cfg, render_mode="rgb_array" if args_cli.video else None)
+    if args_cli.terrain_level is not None:
+        if env.unwrapped.num_envs != 1:
+            raise ValueError("--terrain_level currently requires a single environment.")
+        set_forced_terrain_level(env, args_cli.terrain_level)
+        env.reset()
     # wrap for video recording
     if args_cli.video:
         video_kwargs = {
@@ -213,6 +337,17 @@ def main():
                 ),
             ),
         )
+    else:
+        onnx_policy = None
+
+    moe_gate_logger = None
+    if args_cli.log_moe_gate:
+        if not args_cli.useonnx:
+            print("[WARN] --log_moe_gate currently logs ONNX gate weights only. Use it together with --useonnx.")
+        elif getattr(onnx_policy, "actor_gate", None) is None:
+            print("[WARN] actor_moe_gate.onnx not found. MoE gate logging is disabled.")
+        else:
+            moe_gate_logger = MoeGateLogger(os.path.join(log_dir, "play_logs"), args_cli.moe_gate_print_interval)
 
     override_command = torch.zeros(env.num_envs, 3, device=env.device)
     command_obs_slice = get_obs_slice(env.get_obs_segments(), "velocity_commands")
@@ -253,6 +388,8 @@ def main():
             if args_cli.useonnx:
                 torch_actions = actions
                 actions = onnx_policy(obs)
+                if moe_gate_logger is not None:
+                    moe_gate_logger.record(onnx_policy.last_gate_weights)
                 if (actions - torch_actions).abs().max() > 1e-5:
                     print(
                         "[INFO]: ONNX model and PyTorch model have a difference of"
@@ -272,6 +409,8 @@ def main():
                 break
 
     # close the simulator
+    if moe_gate_logger is not None:
+        moe_gate_logger.close()
     env.close()
 
     if args_cli.video:

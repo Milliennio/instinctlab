@@ -112,3 +112,62 @@ class InstinctRlTransformerHeadCfg(InstinctRlParallelBlockCfg):
 
     output_hidden_sizes: List[int] = []
     """The hidden dimensions of the output mlp head. If None, only a linear layer is used."""
+
+
+@configclass
+class InstinctRlConvTemporalTransformerHeadCfg(InstinctRlParallelBlockCfg):
+    """Configuration for a frame-wise CNN tokenizer followed by a temporal Transformer encoder."""
+
+    class_name: str = "ConvTemporalTransformerHeadModel"
+    """The class name. Default is ConvTemporalTransformerHeadModel."""
+
+    cnn_channels: List[int] = [32, 64, 128, 256]
+    """The output channels of the frame-wise CNN tokenizer."""
+
+    cnn_kernel_sizes: Sequence = [3, 3, 3, (3, 4)]
+    """The convolution kernel sizes of the frame-wise CNN tokenizer."""
+
+    cnn_strides: Sequence = [2, 2, 2, 1]
+    """The convolution strides of the frame-wise CNN tokenizer."""
+
+    cnn_paddings: Sequence = [1, 1, 1, 0]
+    """The convolution paddings of the frame-wise CNN tokenizer."""
+
+    d_model: int = 256
+    """The latent size of the transformer encoder."""
+
+    num_heads: int = 4
+    """The number of attention heads."""
+
+    num_layers: int = 1
+    """The number of transformer encoder layers."""
+
+    dim_feedforward: int = 512
+    """The feedforward dimension of the transformer encoder."""
+
+    dropout: float = 0.1
+    """The dropout rate."""
+
+    activation: str = "relu"
+    """The activation function for the transformer encoder."""
+
+    nonlinearity: str = "ReLU"
+    """The nonlinearity layer for the CNN tokenizer and output layer."""
+
+    layer_norm_eps: float = 1e-5
+    """The epsilon value for layer normalization."""
+
+    batch_first: bool = True
+    """Whether the transformer input is batch first."""
+
+    norm_first: bool = True
+    """Whether to apply normalization first in the transformer encoder layer."""
+
+    temporal_pool: Literal["latest", "mean", "max"] = "latest"
+    """How to select a single temporal embedding from the transformer output."""
+
+    use_temporal_pos_embedding: bool = True
+    """Whether to add learned temporal position embeddings before attention."""
+
+    output_hidden_sizes: List[int] = []
+    """The hidden dimensions of the output mlp head."""
