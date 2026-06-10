@@ -100,6 +100,12 @@ class InstinctRlMoEActorCriticCfg(InstinctRlActorCriticCfg):
     moe_gate_hidden_dims: list[int] = []
     """The hidden dimensions of the MoE gate network."""
 
+    moe_actor_gate_component_names: list[str] | None = None
+    """Observation components used by the actor MoE gate. None means use the full actor input."""
+
+    moe_critic_gate_component_names: list[str] | None = None
+    """Observation components used by the critic MoE gate. None means use the full critic input."""
+
 
 @configclass
 class InstinctRlVaeActorCriticCfg(InstinctRlActorCriticCfg):
