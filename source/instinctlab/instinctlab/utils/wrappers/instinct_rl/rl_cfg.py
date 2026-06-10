@@ -213,6 +213,9 @@ class InstinctRlPpoAlgorithmCfg:
     advantage_mixing_weights: float | Sequence[float] = 1.0
     """The weights for the mixing advantages and compute surrogate loss when multiple rewards are returned."""
 
+    auxiliary_observation_group_names: list[str] = []
+    """Additional observation groups stored in rollout storage for auxiliary supervised losses."""
+
     desired_kl: float = MISSING
     """The desired KL divergence."""
 

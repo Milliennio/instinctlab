@@ -107,6 +107,26 @@ def visualizable_image(
     return images
 
 
+def local_terrain_height_map(
+    env: ManagerBasedEnv,
+    sensor_cfg: SceneEntityCfg,
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+    support_height_offset: float = 0.058,
+    min_height: float = -0.5,
+    max_height: float = 0.8,
+) -> torch.Tensor:
+    """Terrain height samples relative to the estimated foot support plane."""
+    asset = env.scene[asset_cfg.name]
+    sensor = env.scene.sensors[sensor_cfg.name]
+    ray_heights = sensor.data.ray_hits_w[..., 2]
+
+    support_body_heights = asset.data.body_pos_w[:, asset_cfg.body_ids, 2]
+    support_height = torch.min(support_body_heights, dim=1).values - support_height_offset
+    relative_heights = ray_heights - support_height.unsqueeze(-1)
+    relative_heights = torch.where(torch.isfinite(relative_heights), relative_heights, torch.zeros_like(relative_heights))
+    return torch.clamp(relative_heights, min=min_height, max=max_height)
+
+
 class delayed_visualizable_image(ManagerTermBase):
     """A callable class that could sample delayed images from camera sensor that has history data. This is initially
     designed to use NoisyGroupedRayCasterCamera. The output shape will always be (N, num_output_frames, H, W) for now.
