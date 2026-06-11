@@ -29,15 +29,15 @@ CRITIC_MOE_GATE_COMPONENT_NAMES = [
 
 @configclass
 class DepthEncoderTemporalTerrainCfg(InstinctRlConvTemporalTransformerHeadCfg):
-    output_size = 128
-    cnn_channels = [32, 64, 128, 256]
+    output_size = 96
+    cnn_channels = [16, 32, 64, 128]
     cnn_kernel_sizes = [3, 3, 3, (3, 4)]
     cnn_strides = [2, 2, 2, 1]
     cnn_paddings = [1, 1, 1, 0]
-    d_model = 256
+    d_model = 128
     num_heads = 4
     num_layers = 1
-    dim_feedforward = 512
+    dim_feedforward = 256
     dropout = 0.1
     activation = "relu"
     nonlinearity = "ReLU"
@@ -72,7 +72,7 @@ class TerrainAuxMoEPolicyCfg(InstinctRlEncoderMoEActorCriticCfg):
     terrain_aux_group_name = "terrain_aux"
     terrain_aux_latent_component_name = "parallel_latent_0_depth_encoder"
     terrain_aux_output_shape = TERRAIN_AUX_OUTPUT_SHAPE
-    terrain_aux_hidden_dims = [128]
+    terrain_aux_hidden_dims = [96]
     terrain_aux_activation = "elu"
     terrain_aux_loss_func = "smooth_l1"
     terrain_aux_smooth_l1_beta = 0.05
