@@ -7,24 +7,10 @@ from instinctlab.utils.wrappers.instinct_rl import (
 )
 
 from .instinct_rl_amp_cfg import AmpAlgoCfg
+from .gate_slice import ACTOR_MOE_GATE_COMPONENT_NAMES, CRITIC_MOE_GATE_COMPONENT_NAMES
 
 
 TERRAIN_AUX_OUTPUT_SHAPE = (99,)
-
-ACTOR_MOE_GATE_COMPONENT_NAMES = [
-    "projected_gravity",
-    "velocity_commands",
-    "base_ang_vel",
-    "parallel_latent_0_depth_encoder",
-]
-
-CRITIC_MOE_GATE_COMPONENT_NAMES = [
-    "base_lin_vel",
-    "base_ang_vel",
-    "projected_gravity",
-    "velocity_commands",
-    "parallel_latent_0_depth_encoder",
-]
 
 
 @configclass
@@ -66,8 +52,8 @@ class TerrainAuxMoEPolicyCfg(InstinctRlEncoderMoEActorCriticCfg):
     critic_encoder_configs = EncoderConfigs()
 
     moe_gate_hidden_dims = [128]
-    moe_actor_gate_component_names = ACTOR_MOE_GATE_COMPONENT_NAMES
-    moe_critic_gate_component_names = CRITIC_MOE_GATE_COMPONENT_NAMES
+    moe_actor_gate_component_names = None
+    moe_critic_gate_component_names = None
 
     terrain_aux_group_name = "terrain_aux"
     terrain_aux_latent_component_name = "parallel_latent_0_depth_encoder"

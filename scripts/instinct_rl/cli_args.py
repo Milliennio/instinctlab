@@ -9,6 +9,16 @@ if TYPE_CHECKING:
     from instinctlab.utils.wrappers.instinct_rl import InstinctRlOnPolicyRunnerCfg
 
 
+def _get_gate_slice_component_names():
+    """Lazily import gate-slice constants after SimulationApp has been created."""
+    from instinctlab.tasks.parkour.config.g1.agents.gate_slice import (
+        ACTOR_MOE_GATE_COMPONENT_NAMES,
+        CRITIC_MOE_GATE_COMPONENT_NAMES,
+    )
+
+    return list(ACTOR_MOE_GATE_COMPONENT_NAMES), list(CRITIC_MOE_GATE_COMPONENT_NAMES)
+
+
 def add_instinct_rl_args(parser: argparse.ArgumentParser):
     """Add INSTINCT-RL arguments to the parser.
 
@@ -26,6 +36,12 @@ def add_instinct_rl_args(parser: argparse.ArgumentParser):
     arg_group.add_argument("--resume", default=None, action="store_true", help="Whether to resume from a checkpoint.")
     arg_group.add_argument("--load_run", type=str, default=None, help="Name of the run folder to resume from.")
     arg_group.add_argument("--checkpoint", type=str, default=None, help="Checkpoint file to resume from.")
+    arg_group.add_argument(
+        "--gate_slice",
+        action="store_true",
+        default=False,
+        help="Enable sliced MoE gate inputs for parkour-style encoder MoE policies.",
+    )
     # # -- logger arguments
     # arg_group.add_argument(
     #     "--logger", type=str, default=None, choices={"wandb", "tensorboard", "neptune"}, help="Logger module to use."
@@ -74,6 +90,13 @@ def update_instinct_rl_cfg(agent_cfg: InstinctRlOnPolicyRunnerCfg, args_cli: arg
         agent_cfg.load_checkpoint = args_cli.checkpoint
     if args_cli.run_name is not None:
         agent_cfg.run_name = args_cli.run_name
+    if getattr(args_cli, "gate_slice", False) and hasattr(agent_cfg, "policy"):
+        actor_gate_component_names, critic_gate_component_names = _get_gate_slice_component_names()
+        policy_cfg = agent_cfg.policy
+        if hasattr(policy_cfg, "moe_actor_gate_component_names"):
+            policy_cfg.moe_actor_gate_component_names = actor_gate_component_names
+        if hasattr(policy_cfg, "moe_critic_gate_component_names"):
+            policy_cfg.moe_critic_gate_component_names = critic_gate_component_names
     # if args_cli.logger is not None:
     #     agent_cfg.logger = args_cli.logger
     # # set the project name for wandb and neptune
