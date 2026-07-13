@@ -27,6 +27,29 @@ G1_with_shoe_CFG = copy.deepcopy(G1_CFG)
 G1_with_shoe_CFG.spawn.asset_path = os.path.abspath(
     f"{__file_dir__}/../../urdf/g1_29dof_torsoBase_popsicle_with_shoe.urdf"
 )
+G1_with_shoe_carry_box_CFG = copy.deepcopy(G1_with_shoe_CFG)
+G1_with_shoe_carry_box_CFG.spawn.asset_path = os.path.abspath(
+    f"{__file_dir__}/../../urdf/g1_29dof_torsoBase_popsicle_with_shoe_carry_box.urdf"
+)
+G1_with_shoe_carry_box_CFG.spawn.merge_fixed_joints = False
+G1_with_shoe_carry_box_CFG.init_state.joint_pos.update(
+    {
+        "left_shoulder_pitch_joint": -0.191986,
+        "right_shoulder_pitch_joint": -0.191986,
+        "left_shoulder_roll_joint": 0.15708,
+        "right_shoulder_roll_joint": -0.15708,
+        "left_shoulder_yaw_joint": -0.279253,
+        "right_shoulder_yaw_joint": 0.279253,
+        "left_elbow_joint": 0.0349066,
+        "right_elbow_joint": 0.0349066,
+        "left_wrist_roll_joint": -1.41372,
+        "right_wrist_roll_joint": 1.41372,
+        "left_wrist_pitch_joint": 0.15708,
+        "right_wrist_pitch_joint": 0.15708,
+        "left_wrist_yaw_joint": -0.715585,
+        "right_wrist_yaw_joint": 0.715585,
+    }
+)
 
 
 @configclass

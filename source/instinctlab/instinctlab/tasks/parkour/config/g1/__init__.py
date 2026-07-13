@@ -160,3 +160,35 @@ gym.register(
         ),
     },
 )
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-Stair-Carry-TerrainAux-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            f"{task_entry}.g1_parkour_target_amp_carry_terrain_aux_cfg:"
+            "G1ParkourStairCarryTerrainAuxEnvCfg"
+        ),
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux:G1ParkourTerrainAuxPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-Stair-Carry-TerrainAux-Play-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            f"{task_entry}.g1_parkour_target_amp_carry_terrain_aux_cfg:"
+            "G1ParkourStairCarryTerrainAuxEnvCfg_PLAY"
+        ),
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux:G1ParkourTerrainAuxPPORunnerCfg"
+        ),
+    },
+)
