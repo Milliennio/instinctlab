@@ -20,6 +20,9 @@ class InstinctRlParallelBlockCfg:
     takeout_input_components: bool = True
     """Whether to take out the input components from the embedded obs to the rest of the network."""
 
+    takeout_component_names: List[str] | None = None
+    """Optional subset of component_names to remove after encoding. None means remove all input components."""
+
 
 @configclass
 class InstinctRlMlpCfg(InstinctRlParallelBlockCfg):
@@ -171,3 +174,65 @@ class InstinctRlConvTemporalTransformerHeadCfg(InstinctRlParallelBlockCfg):
 
     output_hidden_sizes: List[int] = []
     """The hidden dimensions of the output mlp head."""
+
+
+@configclass
+class InstinctRlDepthCommandCrossAttentionHeadCfg(InstinctRlParallelBlockCfg):
+    """Configuration for a temporal depth memory queried by latest depth and command."""
+
+    class_name: str = "DepthCommandCrossAttentionHeadModel"
+    """The class name. Default is DepthCommandCrossAttentionHeadModel."""
+
+    cnn_channels: List[int] = [16, 32, 64, 128]
+    """The output channels of the frame-wise CNN tokenizer."""
+
+    cnn_kernel_sizes: Sequence = [3, 3, 3, (3, 4)]
+    """The convolution kernel sizes of the frame-wise CNN tokenizer."""
+
+    cnn_strides: Sequence = [2, 2, 2, 1]
+    """The convolution strides of the frame-wise CNN tokenizer."""
+
+    cnn_paddings: Sequence = [1, 1, 1, 0]
+    """The convolution paddings of the frame-wise CNN tokenizer."""
+
+    d_model: int = 128
+    """The latent size of the temporal memory and cross-attention."""
+
+    num_heads: int = 4
+    """The number of attention heads."""
+
+    num_layers: int = 1
+    """The number of transformer encoder layers used to build temporal memory."""
+
+    dim_feedforward: int = 256
+    """The feedforward dimension of the temporal memory encoder and query block."""
+
+    dropout: float = 0.1
+    """The dropout rate."""
+
+    activation: str = "relu"
+    """The activation function for the transformer encoder."""
+
+    nonlinearity: str = "ReLU"
+    """The nonlinearity layer for CNN tokenizer and MLP heads."""
+
+    layer_norm_eps: float = 1e-5
+    """The epsilon value for layer normalization."""
+
+    batch_first: bool = True
+    """Whether the transformer input is batch first."""
+
+    norm_first: bool = True
+    """Whether to apply normalization first in the transformer encoder layer."""
+
+    command_hidden_sizes: List[int] = []
+    """Hidden dimensions for the command embedding MLP."""
+
+    query_hidden_sizes: List[int] = []
+    """Hidden dimensions for the query MLP."""
+
+    output_hidden_sizes: List[int] = []
+    """Hidden dimensions for the output MLP."""
+
+    use_temporal_pos_embedding: bool = True
+    """Whether to add learned temporal position embeddings before memory self-attention."""

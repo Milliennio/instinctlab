@@ -133,6 +133,34 @@ gym.register(
 
 
 gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-TerrainAux-CrossAttn-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{task_entry}.g1_parkour_target_amp_terrain_aux_cfg:G1ParkourTerrainAuxEnvCfg",
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_cross_attn:"
+            "G1ParkourTerrainAuxCrossAttentionPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-TerrainAux-CrossAttn-Play-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{task_entry}.g1_parkour_target_amp_terrain_aux_cfg:G1ParkourTerrainAuxEnvCfg_PLAY",
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_cross_attn:"
+            "G1ParkourTerrainAuxCrossAttentionPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
     id="Instinct-Parkour-Target-Amp-G1-Stair-TerrainAux-v0",
     entry_point="instinctlab.envs:InstinctRlEnv",
     disable_env_checker=True,
