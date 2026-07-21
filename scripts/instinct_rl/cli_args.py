@@ -38,9 +38,16 @@ def add_instinct_rl_args(parser: argparse.ArgumentParser):
     arg_group.add_argument("--checkpoint", type=str, default=None, help="Checkpoint file to resume from.")
     arg_group.add_argument(
         "--gate_slice",
+        dest="gate_slice",
         action="store_true",
-        default=False,
+        default=None,
         help="Enable sliced MoE gate inputs for parkour-style encoder MoE policies.",
+    )
+    arg_group.add_argument(
+        "--no_gate_slice",
+        dest="gate_slice",
+        action="store_false",
+        help="Disable sliced MoE gate inputs and use full encoded observations for MoE gates.",
     )
     # # -- logger arguments
     # arg_group.add_argument(
@@ -90,9 +97,12 @@ def update_instinct_rl_cfg(agent_cfg: InstinctRlOnPolicyRunnerCfg, args_cli: arg
         agent_cfg.load_checkpoint = args_cli.checkpoint
     if args_cli.run_name is not None:
         agent_cfg.run_name = args_cli.run_name
-    if getattr(args_cli, "gate_slice", False) and hasattr(agent_cfg, "policy"):
-        actor_gate_component_names, critic_gate_component_names = _get_gate_slice_component_names()
+    gate_slice = getattr(args_cli, "gate_slice", None)
+    if gate_slice is not None and hasattr(agent_cfg, "policy"):
         policy_cfg = agent_cfg.policy
+        actor_gate_component_names = critic_gate_component_names = None
+        if gate_slice:
+            actor_gate_component_names, critic_gate_component_names = _get_gate_slice_component_names()
         if hasattr(policy_cfg, "moe_actor_gate_component_names"):
             policy_cfg.moe_actor_gate_component_names = actor_gate_component_names
         if hasattr(policy_cfg, "moe_critic_gate_component_names"):

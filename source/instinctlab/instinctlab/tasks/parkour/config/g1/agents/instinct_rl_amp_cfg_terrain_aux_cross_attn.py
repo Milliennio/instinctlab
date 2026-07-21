@@ -6,6 +6,7 @@ from instinctlab.utils.wrappers.instinct_rl import (
     InstinctRlOnPolicyRunnerCfg,
 )
 
+from .gate_slice import ACTOR_MOE_GATE_COMPONENT_NAMES, CRITIC_MOE_GATE_COMPONENT_NAMES
 from .instinct_rl_amp_cfg_terrain_aux import TERRAIN_AUX_OUTPUT_SHAPE, TerrainAuxAmpAlgoCfg
 
 
@@ -50,8 +51,8 @@ class TerrainAuxCrossAttentionMoEPolicyCfg(InstinctRlEncoderMoEActorCriticCfg):
     critic_encoder_configs = EncoderConfigs()
 
     moe_gate_hidden_dims = [128]
-    moe_actor_gate_component_names = None
-    moe_critic_gate_component_names = None
+    moe_actor_gate_component_names = ACTOR_MOE_GATE_COMPONENT_NAMES
+    moe_critic_gate_component_names = CRITIC_MOE_GATE_COMPONENT_NAMES
 
     terrain_aux_group_name = "terrain_aux"
     terrain_aux_latent_component_name = "parallel_latent_0_depth_encoder"
@@ -68,6 +69,19 @@ class G1ParkourTerrainAuxCrossAttentionPPORunnerCfg(InstinctRlOnPolicyRunnerCfg)
     max_iterations = 30000
     save_interval = 5000
     experiment_name = "g1_parkour_terrain_aux_cross_attn"
+    resume = False
+    load_run = ""
+    empirical_normalization = False
+    policy = TerrainAuxCrossAttentionMoEPolicyCfg()
+    algorithm = TerrainAuxAmpAlgoCfg()
+
+
+@configclass
+class G1ParkourStairTerrainAuxCrossAttentionPPORunnerCfg(InstinctRlOnPolicyRunnerCfg):
+    num_steps_per_env = 24
+    max_iterations = 30000
+    save_interval = 5000
+    experiment_name = "g1_parkour_stair_terrain_aux_cross_attn"
     resume = False
     load_run = ""
     empirical_normalization = False

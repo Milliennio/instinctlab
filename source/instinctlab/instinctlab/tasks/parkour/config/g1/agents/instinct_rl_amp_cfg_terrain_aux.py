@@ -52,8 +52,8 @@ class TerrainAuxMoEPolicyCfg(InstinctRlEncoderMoEActorCriticCfg):
     critic_encoder_configs = EncoderConfigs()
 
     moe_gate_hidden_dims = [128]
-    moe_actor_gate_component_names = None
-    moe_critic_gate_component_names = None
+    moe_actor_gate_component_names = ACTOR_MOE_GATE_COMPONENT_NAMES
+    moe_critic_gate_component_names = CRITIC_MOE_GATE_COMPONENT_NAMES
 
     terrain_aux_group_name = "terrain_aux"
     terrain_aux_latent_component_name = "parallel_latent_0_depth_encoder"
