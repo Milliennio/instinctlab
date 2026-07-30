@@ -161,6 +161,60 @@ gym.register(
 
 
 gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-TerrainAux-Eval-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{task_entry}.g1_parkour_target_amp_eval_cfg:G1ParkourTerrainAuxEnvCfg_EVAL",
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux:G1ParkourTerrainAuxPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-TerrainAux-CrossAttn-Eval-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{task_entry}.g1_parkour_target_amp_eval_cfg:G1ParkourTerrainAuxEnvCfg_EVAL",
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_cross_attn:"
+            "G1ParkourTerrainAuxCrossAttentionPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-Stair-TerrainAux-Eval-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{task_entry}.g1_parkour_target_amp_eval_cfg:G1ParkourStairTerrainAuxEnvCfg_EVAL",
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux:G1ParkourTerrainAuxPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-Stair-TerrainAux-CrossAttn-Eval-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{task_entry}.g1_parkour_target_amp_eval_cfg:G1ParkourStairTerrainAuxEnvCfg_EVAL",
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_cross_attn:"
+            "G1ParkourStairTerrainAuxCrossAttentionPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
     id="Instinct-Parkour-Target-Amp-G1-Stair-TerrainAux-CrossAttn-v0",
     entry_point="instinctlab.envs:InstinctRlEnv",
     disable_env_checker=True,
