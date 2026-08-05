@@ -394,3 +394,207 @@ gym.register(
         ),
     },
 )
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-TerrainAux-CrossAttn-TerrainCommandGate-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            f"{task_entry}.g1_parkour_target_amp_terrain_aux_cfg:G1ParkourTerrainAuxEnvCfg"
+        ),
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_terrain_command_gate:"
+            "G1ParkourTerrainAuxTerrainCommandGatePPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-TerrainAux-CrossAttn-TerrainCommandGate-Play-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            f"{task_entry}.g1_parkour_target_amp_terrain_aux_cfg:G1ParkourTerrainAuxEnvCfg_PLAY"
+        ),
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_terrain_command_gate:"
+            "G1ParkourTerrainAuxTerrainCommandGatePPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-TerrainAux-CrossAttn-TerrainCommandGate-Eval-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            f"{task_entry}.g1_parkour_target_amp_eval_cfg:G1ParkourTerrainAuxEnvCfg_EVAL"
+        ),
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_terrain_command_gate:"
+            "G1ParkourTerrainAuxTerrainCommandGatePPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-Stair-TerrainAux-CrossAttn-TerrainCommandGate-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            f"{task_entry}.g1_parkour_target_amp_terrain_aux_cfg:"
+            "G1ParkourStairTerrainAuxEnvCfg"
+        ),
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_terrain_command_gate:"
+            "G1ParkourStairTerrainAuxTerrainCommandGatePPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-Stair-TerrainAux-CrossAttn-TerrainCommandGate-Play-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            f"{task_entry}.g1_parkour_target_amp_terrain_aux_cfg:"
+            "G1ParkourStairTerrainAuxEnvCfg_PLAY"
+        ),
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_terrain_command_gate:"
+            "G1ParkourStairTerrainAuxTerrainCommandGatePPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-Stair-TerrainAux-CrossAttn-TerrainCommandGate-Eval-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            f"{task_entry}.g1_parkour_target_amp_eval_cfg:"
+            "G1ParkourStairTerrainAuxEnvCfg_EVAL"
+        ),
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_terrain_command_gate:"
+            "G1ParkourStairTerrainAuxTerrainCommandGatePPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-TerrainAux-CrossAttn-TerrainCommandGate-GeoAux-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            f"{task_entry}.g1_parkour_target_amp_terrain_aux_cfg:G1ParkourTerrainAuxEnvCfg"
+        ),
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_terrain_command_gate:"
+            "G1ParkourTerrainAuxTerrainCommandGateGeoAuxPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-TerrainAux-CrossAttn-TerrainCommandGate-GeoAux-Play-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            f"{task_entry}.g1_parkour_target_amp_terrain_aux_cfg:G1ParkourTerrainAuxEnvCfg_PLAY"
+        ),
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_terrain_command_gate:"
+            "G1ParkourTerrainAuxTerrainCommandGateGeoAuxPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-TerrainAux-CrossAttn-TerrainCommandGate-GeoAux-Eval-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            f"{task_entry}.g1_parkour_target_amp_eval_cfg:G1ParkourTerrainAuxEnvCfg_EVAL"
+        ),
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_terrain_command_gate:"
+            "G1ParkourTerrainAuxTerrainCommandGateGeoAuxPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Instinct-Parkour-Target-Amp-G1-Stair-TerrainAux-CrossAttn-TerrainCommandGate-GeoAux-v0",
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            f"{task_entry}.g1_parkour_target_amp_terrain_aux_cfg:"
+            "G1ParkourStairTerrainAuxEnvCfg"
+        ),
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_terrain_command_gate:"
+            "G1ParkourStairTerrainAuxTerrainCommandGateGeoAuxPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id=(
+        "Instinct-Parkour-Target-Amp-G1-Stair-TerrainAux-CrossAttn-"
+        "TerrainCommandGate-GeoAux-Play-v0"
+    ),
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            f"{task_entry}.g1_parkour_target_amp_terrain_aux_cfg:"
+            "G1ParkourStairTerrainAuxEnvCfg_PLAY"
+        ),
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_terrain_command_gate:"
+            "G1ParkourStairTerrainAuxTerrainCommandGateGeoAuxPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id=(
+        "Instinct-Parkour-Target-Amp-G1-Stair-TerrainAux-CrossAttn-"
+        "TerrainCommandGate-GeoAux-Eval-v0"
+    ),
+    entry_point="instinctlab.envs:InstinctRlEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            f"{task_entry}.g1_parkour_target_amp_eval_cfg:"
+            "G1ParkourStairTerrainAuxEnvCfg_EVAL"
+        ),
+        "instinct_rl_cfg_entry_point": (
+            f"{agents.__name__}.instinct_rl_amp_cfg_terrain_aux_terrain_command_gate:"
+            "G1ParkourStairTerrainAuxTerrainCommandGateGeoAuxPPORunnerCfg"
+        ),
+    },
+)

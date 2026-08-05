@@ -98,6 +98,56 @@ def add_instinct_rl_args(parser: argparse.ArgumentParser):
         default=None,
         help="PPO loss coefficient for global expert load balancing.",
     )
+    arg_group.add_argument(
+        "--actor_gate_mode",
+        type=str,
+        choices=("full", "slice", "factorized"),
+        default=None,
+        help="Select the actor-only Terrain-Command gate mode when supported.",
+    )
+    arg_group.add_argument(
+        "--enable_gate_geo_aux",
+        dest="gate_geo_aux",
+        action="store_true",
+        default=None,
+        help="Enable blind-region geometry supervision for the Terrain-Command gate.",
+    )
+    arg_group.add_argument(
+        "--disable_gate_geo_aux",
+        dest="gate_geo_aux",
+        action="store_false",
+        help="Disable blind-region geometry supervision for the Terrain-Command gate.",
+    )
+    arg_group.add_argument(
+        "--terrain_command_gate_beta",
+        type=float,
+        default=None,
+        help="Command-logit scale for the actor-only Terrain-Command gate.",
+    )
+    arg_group.add_argument(
+        "--terrain_command_gate_temperature",
+        type=float,
+        default=None,
+        help="Softmax temperature for the actor-only Terrain-Command gate.",
+    )
+    arg_group.add_argument(
+        "--gate_geo_aux_weight",
+        type=float,
+        default=None,
+        help="PPO loss coefficient for blind-region gate geometry supervision.",
+    )
+    arg_group.add_argument(
+        "--terrain_command_gate_balance_weight",
+        type=float,
+        default=None,
+        help="PPO loss coefficient for Terrain-Command actor gate load balancing.",
+    )
+    arg_group.add_argument(
+        "--gate_geo_edge_weight",
+        type=float,
+        default=None,
+        help="Optional terrain-edge multiplier in the blind-region geometry loss.",
+    )
     # # -- logger arguments
     # arg_group.add_argument(
     #     "--logger", type=str, default=None, choices={"wandb", "tensorboard", "neptune"}, help="Logger module to use."
@@ -192,11 +242,54 @@ def update_instinct_rl_cfg(agent_cfg: InstinctRlOnPolicyRunnerCfg, args_cli: arg
         if max_iterations is not None and hasattr(policy_cfg, "moe_gate_total_iterations"):
             policy_cfg.moe_gate_total_iterations = max_iterations
 
+        actor_gate_mode = getattr(args_cli, "actor_gate_mode", None)
+        if actor_gate_mode is not None:
+            if not hasattr(policy_cfg, "actor_gate_mode"):
+                raise ValueError(
+                    f"Policy {type(policy_cfg).__name__} does not support --actor_gate_mode."
+                )
+            policy_cfg.actor_gate_mode = actor_gate_mode
+            if actor_gate_mode == "slice":
+                actor_components, _ = _get_gate_slice_component_names()
+                policy_cfg.moe_actor_gate_component_names = actor_components
+            elif actor_gate_mode == "full":
+                policy_cfg.moe_actor_gate_component_names = None
+
+        terrain_command_overrides = {
+            "factorized_gate_geo_aux_enabled": getattr(args_cli, "gate_geo_aux", None),
+            "factorized_gate_beta": getattr(args_cli, "terrain_command_gate_beta", None),
+            "factorized_gate_temperature": getattr(
+                args_cli, "terrain_command_gate_temperature", None
+            ),
+            "factorized_gate_edge_weight": getattr(args_cli, "gate_geo_edge_weight", None),
+            "factorized_gate_geo_aux_weight": getattr(args_cli, "gate_geo_aux_weight", None),
+            "factorized_gate_balance_weight": getattr(
+                args_cli, "terrain_command_gate_balance_weight", None
+            ),
+        }
+        for field_name, value in terrain_command_overrides.items():
+            if value is not None:
+                if not hasattr(policy_cfg, field_name):
+                    raise ValueError(
+                        f"Policy {type(policy_cfg).__name__} does not support {field_name}."
+                    )
+                setattr(policy_cfg, field_name, value)
+        if max_iterations is not None and hasattr(
+            policy_cfg, "factorized_gate_total_iterations"
+        ):
+            policy_cfg.factorized_gate_total_iterations = max_iterations
+
     if hasattr(agent_cfg, "algorithm"):
         algorithm_cfg = agent_cfg.algorithm
         algorithm_overrides = {
             "moe_gate_contrastive_loss_coef": getattr(args_cli, "gate_contrastive_weight", None),
             "moe_gate_balance_loss_coef": getattr(args_cli, "gate_balance_weight", None),
+            "terrain_command_gate_geometry_loss_coef": getattr(
+                args_cli, "gate_geo_aux_weight", None
+            ),
+            "terrain_command_gate_balance_loss_coef": getattr(
+                args_cli, "terrain_command_gate_balance_weight", None
+            ),
         }
         for field_name, value in algorithm_overrides.items():
             if value is not None:
